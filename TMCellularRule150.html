@@ -1,33 +1,46 @@
-<!–– Simple program to display Cellular Automaton Rule 150 and TM modeling.
-Written by: Alexandria Wolfram - aleewolfram@csu.fullerton.edu––>
+<!-- Simple program to display Cellular Automaton Rule 150 and TM modeling.
+Written by: Alexandria Wolfram - aleewolfram@csu.fullerton.edu-->
 
 <html>
+<title>Team AJA - TM Cella Rule 150</title>
+
     <head>
 <h1><font color= #581845>Team AJA - TM Cella Rule 150</font></h1>
     </head>
 <button type="button" onClick="onClick()">Click me</button>
 <button type="button2" onClick="autoClick()">Auto Run</button>
+<button type="button3" onClick="pause()">Click to Pause</button>
+
 <p>Clicks: <a id="clicks">0</a></p>
 <body style="background-color: #F9C6E3;">
         <canvas id="canvas" width="410px" height="200px" style="background: #fff; magrin:400px;"></canvas>
         <script type="text/javascript" language="javascript">
 
           var clicks = 0;
-          function onClick() {
+		  var refreshIntervalId = 0;
+
+          function onClick() 
+		  {
             clicks += 1;
             document.getElementById("clicks").innerHTML = clicks;
             draw();
 
-              if(clicks == 164)
-              {
-                clearInterval(refreshIntervalId);
-              }
-            };
+            if (clicks == 164)
+			{
+					pause();
+			}
+			
+		   };
 
             function autoClick() //auto clicker runs forever, need to fix
             {
-              var refreshIntervalId = setInterval(onClick, 1000);
-            }
+              refreshIntervalId = setInterval(onClick, 50);
+            };
+			
+			function pause()
+			{
+				clearInterval(refreshIntervalId);
+			};
 
         /* function that creates a matrix
            function was created with help of Stack Overflow answer by Matthew Crumley
@@ -116,15 +129,18 @@ Written by: Alexandria Wolfram - aleewolfram@csu.fullerton.edu––>
             }
           }
 
-
+		
 
           //function that draws the matrix on the canvas
           function draw()
           {
             var canvas = document.getElementById('canvas');
             var ctx = canvas.getContext("2d");
-            //ctx.clearRect(0, 0, 410, 200); // clear canvas
-          //  ctx.fillRect((10), (10), 10, 10);
+            if (clicks == 165)
+			{
+				ctx.clearRect(0, 0, 410, 200); // clear canvas
+				clicks = 0;
+			}
           var counter = 0;
             for(var i = 0; i < 20; i++)
             {
@@ -140,7 +156,7 @@ Written by: Alexandria Wolfram - aleewolfram@csu.fullerton.edu––>
 
                 if(matrix[i][j] == 1 && counter < clicks)
                 {
-                      console.log("Filling: " + i + " " +j +" Counter =" + counter + "Clicks =" + clicks);
+                    console.log("Filling: " + i + " " +j +" Counter =" + counter + "Clicks =" + clicks);
                     ctx.fillRect(y, x, 10, 10);
                     counter++;
                 }
