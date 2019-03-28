@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>animate demo</title>
+  <style>
+  div {
+    position: absolute;
+    background-color: #abc;
+    top: 3px;
+    left: 3px;
+    width: 10px;
+    height: 10px;
+    margin: 5px;
+  }
+  </style>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+</head>
+<body>
+<canvas id="canvas" width="410px" height="200px" style="background: #f9ffb5; magrin:400px;"></canvas>
+<canvas id="canvas2" width="410px" height="200px" style="background: #b9d1f7; magrin:400px;"></canvas>
+<button id="left">&laquo;</button>
+<button id="right">&raquo;</button>
+<button id="down">Down</button>
+<button id="up">Up</button>
+<button type="button" onclick="autoRun()">Click Me</button>
+<button type="button" onclick="newRow()">New Row</button>
+<div id="block" class="block"></div>
+
+
+<script>
+var refreshIntervalId = 0;
+var downCounter = 1;
+var across = 0;
+var down = 0;
+
+function autoRun()
+{
+refreshIntervalId = setInterval(runTM, 1010);//don't change time, this connects with how fast animations go
+}
+
+function pause()
+{
+  clearInterval(refreshIntervalId);
+}
+
+function runTM()
+{
+  console.log("Across = " + across);
+  if(across == 0)
+  {
+    firstCellMove();
+    across++;
+    console.log("First Cell Move");
+  }
+  else if(across > 0 && across < 40)
+  {
+    normalMove();
+    across++;
+    console.log("Normal Cell Move");
+  }
+  else if(across == 40)
+  {
+    lastCellMove();
+    across = 0;
+    newRow();
+    down++;
+    console.log("Last Cell Move");
+  }
+  if(down == 19)
+  {
+    pause();
+  }
+}
+function firstCellMove() //if cell==0
+{
+    $( ".block" ).animate({ "left": "+=10px" }, "fast");//go right 1
+    $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+    $( ".block" ).animate({ "top": "+=10px" },"fast");//go Down
+    $( ".block" ).animate({ "top": "-=10px" }, "fast");//go Up
+}
+
+function normalMove() // if cell is greater than 0 and less than 39
+{
+  $( ".block" ).animate({ "left": "+=10px" }, "fast");//go right 1
+  $( ".block" ).animate({ "left": "+=10px" }, "fast");//go right 2
+  $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+  $( ".block" ).animate({ "top": "+=10px" }, "fast");//go Down
+  $( ".block" ).animate({ "top": "-=10px" }, "fast");//go Up
+}
+
+function lastCellMove() // if cell==39
+{
+  $( ".block" ).animate({ "left": "+=10px" }, "fast");//go right 1
+  $( ".block" ).animate({ "top": "+=10px" }, "fast");//go Down
+  $( ".block" ).animate({ "top": "-=10px" }, "fast");//go Up
+}
+
+function newRow() //moves cell down one row
+{
+  var elem = document.getElementById("block");
+  elem.style.left = '3px';
+  $( ".block" ).animate({ "top": "+=10px" }, "fast");
+  downCounter++;
+}
+
+$( "#right" ).click(function() {
+  $( ".block" ).animate({ "left": "+=10px" });
+});
+
+$( "#left" ).click(function(){
+  $( ".block" ).animate({ "left": "-=10px" });
+});
+
+$( "#down" ).click(function(){
+  $( ".block" ).animate({ "top": "+=10px" });
+});
+
+$( "#up" ).click(function(){
+  $( ".block" ).animate({ "top": "-=10px" });
+});
+
+function drawTM()//need to flesh out after we fix problem with not going down
+{
+  var canvas2 = document.getElementById("canvas2");
+  var ctx2 = canvas2.getContext("2d");
+  ctx2.font = "13px Arial";
+  var n = 10;
+  var down = 30;
+  ctx2.fillText("Left to 1st cell of old-gen",n,down); //red
+  ctx2.fillText("Read old left cell, move Right",n,down*2); //blue
+  ctx2.fillText("Read old middle cell, move Right",n,down*3); //green
+  ctx2.fillText("Read old right cell, move Left",n,down*4); //purple
+  ctx2.fillText("Down to new-gen row's middle cell",n,down*5); // orange
+  ctx2.fillText("Write new gen middle cell, move Up",n,down*6); //yellow
+  ctx2.rect(5,15,220,20);
+  ctx2.stroke();
+}
+
+drawTM();
+
+</script>
+
+</body>
+</html>
