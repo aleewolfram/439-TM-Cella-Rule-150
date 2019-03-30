@@ -13,18 +13,12 @@
     height: 10px;
     margin: 5px;
   }
+
   </style>
   <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 </head>
 <body>
 <canvas id="canvas" width="410px" height="200px" style="background: #f9ffb5; magrin:400px;"></canvas>
-<canvas id="canvas2" width="410px" height="200px" style="background: #b9d1f7; magrin:400px;"></canvas>
-<button id="left">&laquo;</button>
-<button id="right">&raquo;</button>
-<button id="down">Down</button>
-<button id="up">Up</button>
-<button type="button" onclick="autoRun()">Click Me</button>
-<button type="button" onclick="newRow()">New Row</button>
 <div id="block" class="block"></div>
 
 
@@ -33,10 +27,15 @@ var refreshIntervalId = 0;
 var downCounter = 1;
 var across = 0;
 var down = 0;
+var acrossCounter = 1;
+// creates a multi dimentional array of size 400x400
+var SIZE2 = 41;
+var SIZE = 20;
+var matrix = createMatrix(SIZE, SIZE2);
 
 function autoRun()
 {
-refreshIntervalId = setInterval(runTM, 1010);//don't change time, this connects with how fast animations go
+refreshIntervalId = setInterval(move, 1010);//don't change time, this connects with how fast animations go
 }
 
 function pause()
@@ -44,102 +43,217 @@ function pause()
   clearInterval(refreshIntervalId);
 }
 
-function runTM()
+function fillMatrix()
 {
-  console.log("Across = " + across);
+  // initializes the first row
+  for(var i = 0; i < SIZE2; i++)
+  {
+    if(i != 20)
+    {
+      matrix[0][i] = 0;
+    }
+    else
+    {
+      matrix[0][i] = 1;
+    }
+  }
+  for(i = 1; i < SIZE; i++) // for down
+  {
+    for(var j = 0; j < SIZE2; j++) //for across
+    {
+      if(j==0)
+      {
+        //special case for left edge cells
+        if(matrix[i-1][j]==1 && matrix[i-1][j+1]==1)//rule 5
+          matrix[i][j]=0;
+        if(matrix[i-1][j]==1 && matrix[i-1][j+1]==0)//rule 6
+          matrix[i][j]=1;
+        if(matrix[i-1][j]==0 && matrix[i-1][j+1]==1)//rule 7
+          matrix[i][j]=1;
+        if(matrix[i-1][j]==0 && matrix[i-1][j+1]==0)//rule 8
+          matrix[i][j]=0;
+      }
+      else if(j==(SIZE2-1))
+      {
+        //special case for right edge cells
+        if(matrix[i-1][j-1]==1 && matrix[i-1][j]==1)//rule 2
+          matrix[i][j]=0;
+        if(matrix[i-1][j-1]==1 && matrix[i-1][j]==0)//rule 4
+          matrix[i][j]=1;
+        if(matrix[i-1][j-1]==0 && matrix[i-1][j]==1)//rule 6
+          matrix[i][j]=1;
+        if(matrix[i-1][j-1]==0 && matrix[i-1][j]==0)//rule 8
+          matrix[i][j]=0;
+      }
+      else
+      {
+        //for all non-edge cells
+        if(matrix[i-1][j-1]==1 && matrix[i-1][j]==1 && matrix[i-1][j+1]==1)//rule 1
+          matrix[i][j]=1;
+        if(matrix[i-1][j-1]==1 && matrix[i-1][j]==1 && matrix[i-1][j+1]==0)//rule 2
+          matrix[i][j]=0;
+        if(matrix[i-1][j-1]==1 && matrix[i-1][j]==0 && matrix[i-1][j+1]==1)//rule 3
+          matrix[i][j]=0;
+        if(matrix[i-1][j-1]==1 && matrix[i-1][j]==0 && matrix[i-1][j+1]==0)//rule 4
+          matrix[i][j]=1;
+        if(matrix[i-1][j-1]==0 && matrix[i-1][j]==1 && matrix[i-1][j+1]==1)//rule 5
+          matrix[i][j]=0;
+        if(matrix[i-1][j-1]==0 && matrix[i-1][j]==1 && matrix[i-1][j+1]==0)//rule 6
+          matrix[i][j]=1;
+        if(matrix[i-1][j-1]==0 && matrix[i-1][j]==0 && matrix[i-1][j+1]==1)//rule 7
+          matrix[i][j]=1;
+        if(matrix[i-1][j-1]==0 && matrix[i-1][j]==0 && matrix[i-1][j+1]==0)//rule 8
+          matrix[i][j]=0;
+      }
+    }
+  }
+}
+
+/* function that creates a matrix
+   function was created with help of Stack Overflow answer by Matthew Crumley
+ link: https://stackoverflow.com/questions/966225/how-can-i-create-a-two-dimensional-array-in-javascript */
+function createMatrix(length)
+{
+      var array = new Array(length || 0), y = length;
+      if (arguments.length > 1)
+      {
+          var argument = Array.prototype.slice.call(arguments, 1);
+          while(y-- != 0)
+          {
+            array[length-1 - y] = createMatrix.apply(this, argument);
+          }
+      }
+      return array;
+  }
+
+fillMatrix();
+//drawTM();
+
+var states = [];
+var stateCounter = 0;
+
+function move()
+{
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext("2d");
+  var elem = document.getElementById("block");
+//  console.log("stateCounter = " + stateCounter);
+  ctx.fillRect(200, 0, 10, 10);
+  //if(stateCounter < 3)
+  //{
+  if(across > 0)
+  {
+  $( ".block" ).animate({ "left": "+=10px" }, "fast");//go right 1
+  }
+  console.log("states[" + stateCounter + "] = matrix[" + down + "][" + across +"]");
+  states[stateCounter] = matrix[down][across];
+  //}
   if(across == 0)
   {
-    firstCellMove();
-    across++;
-    console.log("First Cell Move");
+    states[0] = 0;
+    states[1] = matrix[down][across];
+    states[2] = matrix[down][across+1];
   }
-  else if(across > 0 && across < 40)
+  if(across == 41)
   {
-    normalMove();
-    across++;
-    console.log("Normal Cell Move");
+    states[2] = 0;
   }
-  else if(across == 40)
+  across++;
+  stateCounter++;
+  if(stateCounter == 3)
   {
-    lastCellMove();
-    across = 0;
-    newRow();
+    console.log("states = [" + states[0] + states[1] + states[2] + "]");
+    if(states[0] == 1 && states[1] == 1 && states[2] == 1) //state 1
+    { //write
+      document.getElementById("state").innerHTML = "1";
+      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+      $( ".block" ).animate({ "top": "+=10px" },"fast");//go Down
+      $( ".block" ).animate({ "top": "-=10px" }, "fast");//go Up
+      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+      across-=2;
+      ctx.fillRect((across)*10, (down+1)*10, 10, 10);
+    }
+    if(states[0] == 1 && states[1] == 1 && states[2] == 0) //state 2
+    {//nothing
+      document.getElementById("state").innerHTML = "2";
+      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+      across-=2;
+    }
+    if(states[0] == 1 && states[1] == 0 && states[2] == 1)//state 3
+    {//nothing
+      document.getElementById("state").innerHTML = "3";
+      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+      across-=2;
+    }
+    if(states[0] == 1 && states[1] == 0 && states[2] == 0)//state 4
+    { //write
+      document.getElementById("state").innerHTML = "4";
+      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+      $( ".block" ).animate({ "top": "+=10px" },"fast");//go Down
+      $( ".block" ).animate({ "top": "-=10px" }, "fast");//go Up
+      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+      across-=2;
+      ctx.fillRect((across)*10, (down+1)*10, 10, 10);
+    }
+    if(states[0] == 0 && states[1] == 1 && states[2] == 1)//state 5
+    {//nothing
+      document.getElementById("state").innerHTML = "5";
+      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+      across-=2;
+    }
+    if(states[0] == 0 && states[1] == 1 && states[2] == 0)//state 6
+    { //write
+      document.getElementById("state").innerHTML = "6";
+      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+      $( ".block" ).animate({ "top": "+=10px" },"fast");//go Down
+      $( ".block" ).animate({ "top": "-=10px" }, "fast");//go Up
+      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+      across-=2;
+      ctx.fillRect((across)*10, (down+1)*10, 10, 10);
+    }
+    if(states[0] == 0 && states[1] == 0 && states[2] == 1)//state 7
+    { //write
+      document.getElementById("state").innerHTML = "7";
+      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+      $( ".block" ).animate({ "top": "+=10px" },"fast");//go Down
+      $( ".block" ).animate({ "top": "-=10px" }, "fast");//go Up
+      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+      across-=2;
+      ctx.fillRect((across)*10, (down+1)*10, 10, 10);
+    }
+    if(states[0] == 0 && states[1] == 0 && states[2] == 0)//state 8
+    {//nothing
+      document.getElementById("state").innerHTML = "8";
+      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
+      across-=2;
+    }
+    stateCounter = 0;
+    states = [];
+  }
+  if(across == 42)
+  {
+    $( ".block" ).animate({ "top": "+=10px" }, "fast");//move down
+    $( ".block" ).animate({ "left": "-=410px" }, "fast");//go left 1
+    //$( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
     down++;
-    console.log("Last Cell Move");
+    across=0;
+    stateCounter = 0;
+    states = [];
   }
-  if(down == 19)
+  if(down == 20)
   {
     pause();
   }
+
 }
-function firstCellMove() //if cell==0
-{
-    $( ".block" ).animate({ "left": "+=10px" }, "fast");//go right 1
-    $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
-    $( ".block" ).animate({ "top": "+=10px" },"fast");//go Down
-    $( ".block" ).animate({ "top": "-=10px" }, "fast");//go Up
-}
-
-function normalMove() // if cell is greater than 0 and less than 39
-{
-  $( ".block" ).animate({ "left": "+=10px" }, "fast");//go right 1
-  $( ".block" ).animate({ "left": "+=10px" }, "fast");//go right 2
-  $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
-  $( ".block" ).animate({ "top": "+=10px" }, "fast");//go Down
-  $( ".block" ).animate({ "top": "-=10px" }, "fast");//go Up
-}
-
-function lastCellMove() // if cell==39
-{
-  $( ".block" ).animate({ "left": "+=10px" }, "fast");//go right 1
-  $( ".block" ).animate({ "top": "+=10px" }, "fast");//go Down
-  $( ".block" ).animate({ "top": "-=10px" }, "fast");//go Up
-}
-
-function newRow() //moves cell down one row
-{
-  var elem = document.getElementById("block");
-  elem.style.left = '3px';
-  $( ".block" ).animate({ "top": "+=10px" }, "fast");
-  downCounter++;
-}
-
-$( "#right" ).click(function() {
-  $( ".block" ).animate({ "left": "+=10px" });
-});
-
-$( "#left" ).click(function(){
-  $( ".block" ).animate({ "left": "-=10px" });
-});
-
-$( "#down" ).click(function(){
-  $( ".block" ).animate({ "top": "+=10px" });
-});
-
-$( "#up" ).click(function(){
-  $( ".block" ).animate({ "top": "-=10px" });
-});
-
-function drawTM()//need to flesh out after we fix problem with not going down
-{
-  var canvas2 = document.getElementById("canvas2");
-  var ctx2 = canvas2.getContext("2d");
-  ctx2.font = "13px Arial";
-  var n = 10;
-  var down = 30;
-  ctx2.fillText("Left to 1st cell of old-gen",n,down); //red
-  ctx2.fillText("Read old left cell, move Right",n,down*2); //blue
-  ctx2.fillText("Read old middle cell, move Right",n,down*3); //green
-  ctx2.fillText("Read old right cell, move Left",n,down*4); //purple
-  ctx2.fillText("Down to new-gen row's middle cell",n,down*5); // orange
-  ctx2.fillText("Write new gen middle cell, move Up",n,down*6); //yellow
-  ctx2.rect(5,15,220,20);
-  ctx2.stroke();
-}
-
-drawTM();
-
 </script>
-
+<br><button type="button" onclick="move()">Run Stepper</button>
+<br><button type="button" onclick="autoRun()">AutoRun</button>
+<br><button type="button" onclick="pause()">Pause</button>
+<p>TM in State: <a id="state"></a></p>
 </body>
 </html>
