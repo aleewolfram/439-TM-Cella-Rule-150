@@ -1,12 +1,11 @@
-# Cells-Rule-45
-
+# 439-TM-Cella-Rule-150
 Andrew
 
 Allie
 
 Juan
 
-Run Instructions: Open cell45.html in a web browser. Tested in Firefox.
+Run Instructions: Open TMCellularRule150.html in a web browser. Tested in Firefox.
 
 Description: This program calculates generations of cells described by Wolfram ECA rule 150.
 
