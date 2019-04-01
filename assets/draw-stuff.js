@@ -1,23 +1,25 @@
-  var refreshIntervalId = 0;
+var refreshIntervalId = 0;
 var downCounter = 1;
 var across = 0;
 var down = 0;
 var acrossCounter = 1;
+
 // creates a multi dimentional array of size 400x400
 var SIZE2 = 41;
 var SIZE = 20;
 var matrix = createMatrix(SIZE, SIZE2);
 
 
-  var canvas = document.getElementById('canvas');
-  var ctx = canvas.getContext("2d");
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext("2d");
   
-   var canvas2 = document.getElementById('canvas2');
-  var ctx2 = canvas2.getContext("2d");
+var canvas2 = document.getElementById('canvas2');
+var ctx2 = canvas2.getContext("2d");
   
-  makeGrid();
+makeGrid();
   
-  var elem = document.getElementById("block");
+var elem = document.getElementById("block");
+
 function autoRun()
 {
 refreshIntervalId = setInterval(move, 1010);//don't change time, this connects with how fast animations go
@@ -32,6 +34,9 @@ function makeGrid()
 {
 	var x =0;
 	var	y=0;
+	
+	ctx2.clearRect(0, 0, 50, 20); // clear canvas	
+	
 	for( i = 0; i < 5; i++)
 	{
 		
@@ -164,15 +169,17 @@ function move()
   if(stateCounter == 3)
   {
     console.log("states = [" + states[0] + states[1] + states[2] + "]");
+	
+	//Every state requires at least one left at the beginning, placing it here allows less repeated code
+	$( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1  
+
     if(states[0] == 1 && states[1] == 1 && states[2] == 1) //state 1
     { //write
       document.getElementById("state").innerHTML = "1";
-      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
       $( ".block" ).animate({ "top": "+=10px" },"fast");//go Down
       $( ".block" ).animate({ "top": "-=10px" }, "fast");//go Up
       $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
       across-=2;
-	  ctx2.clearRect(0, 0, 50, 20); // clear canvas	
 	  makeGrid();
 	  ctx2.fillRect(10,0,30,10);
 	  ctx2.fillRect(20,10,10,10);
@@ -183,8 +190,6 @@ function move()
     {//nothing
       document.getElementById("state").innerHTML = "2";
       $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
-      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
-	  ctx2.clearRect(0, 0, 50, 20); // clear canvas	 
 	  makeGrid();	  
 	  ctx2.fillRect(10,0,20,10);
       across-=2;
@@ -193,8 +198,6 @@ function move()
     {//nothing
       document.getElementById("state").innerHTML = "3";
       $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
-      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
-	  ctx2.clearRect(0, 0, 50, 20); // clear canvas	  
  	  makeGrid();
 	  ctx2.fillRect(10,0,10,10);
 	  ctx2.fillRect(30,0,10,10);
@@ -203,11 +206,9 @@ function move()
     if(states[0] == 1 && states[1] == 0 && states[2] == 0)//state 4
     { //write
       document.getElementById("state").innerHTML = "4";
-      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
       $( ".block" ).animate({ "top": "+=10px" },"fast");//go Down
       $( ".block" ).animate({ "top": "-=10px" }, "fast");//go Up
       $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
-	  ctx2.clearRect(0, 0, 50, 20); // clear canvas	  
 	  makeGrid();
 	  ctx2.fillRect(10,0,10,10);
 	  ctx2.fillRect(20,10,10,10);
@@ -218,8 +219,6 @@ function move()
     {//nothing
       document.getElementById("state").innerHTML = "5";
       $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
-      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
-	  ctx2.clearRect(0, 0, 50, 20); // clear canvas	  
 	  makeGrid();	  
 	  ctx2.fillRect(20,0,20,10);
       across-=2;
@@ -227,11 +226,9 @@ function move()
     if(states[0] == 0 && states[1] == 1 && states[2] == 0)//state 6
     { //write
       document.getElementById("state").innerHTML = "6";
-      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
       $( ".block" ).animate({ "top": "+=10px" },"fast");//go Down
       $( ".block" ).animate({ "top": "-=10px" }, "fast");//go Up
       $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
-	  ctx2.clearRect(0, 0, 50, 20); // clear canvas
 	  makeGrid();	  
 	  ctx2.fillRect(20,0,10,10);
 	  ctx2.fillRect(20,10,10,10);
@@ -241,11 +238,9 @@ function move()
     if(states[0] == 0 && states[1] == 0 && states[2] == 1)//state 7
     { //write
       document.getElementById("state").innerHTML = "7";
-      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
       $( ".block" ).animate({ "top": "+=10px" },"fast");//go Down
       $( ".block" ).animate({ "top": "-=10px" }, "fast");//go Up
       $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
-	  ctx2.clearRect(0, 0, 50, 20); // clear canvas
 	  makeGrid();	  
 	  ctx2.fillRect(30,0,10,10);
 	  ctx2.fillRect(20,10,10,10);
@@ -256,8 +251,6 @@ function move()
     {//nothing
       document.getElementById("state").innerHTML = "8";
       $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
-      $( ".block" ).animate({ "left": "-=10px" }, "fast");//go left 1
-	  ctx2.clearRect(0, 0, 50, 20); // clear canvas
 	  makeGrid();
       across-=2;
     }
