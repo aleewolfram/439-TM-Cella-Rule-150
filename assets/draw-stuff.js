@@ -135,9 +135,9 @@ fillMatrix();
 var states = [];
 var stateCounter = 0;
 
-function fillIn()
+function fillIn(passedAcross, passedDown)
 {
-	ctx.fillRect((across)*10, (down+1)*10, 10, 10);
+	ctx.fillRect((passedAcross)*10, (passedDown+1)*10, 10, 10);
 }
 
 function move()
@@ -183,7 +183,7 @@ function move()
 	  makeGrid();
 	  ctx2.fillRect(10,0,30,10);
 	  ctx2.fillRect(20,10,10,10);
-	  t = setTimeout(fillIn, 500);
+	  t = setTimeout(fillIn(across, down), 500);
 
     }
     if(states[0] == 1 && states[1] == 1 && states[2] == 0) //state 2
@@ -213,7 +213,7 @@ function move()
 	  ctx2.fillRect(10,0,10,10);
 	  ctx2.fillRect(20,10,10,10);
       across-=2;
-      t = setTimeout(fillIn, 500);
+	  t = setTimeout(fillIn(across, down), 500);
     }
     if(states[0] == 0 && states[1] == 1 && states[2] == 1)//state 5
     {//nothing
@@ -233,7 +233,7 @@ function move()
 	  ctx2.fillRect(20,0,10,10);
 	  ctx2.fillRect(20,10,10,10);
       across-=2;
-      t = setTimeout(fillIn, 500);
+	  t = setTimeout(fillIn(across, down), 500);
     }
     if(states[0] == 0 && states[1] == 0 && states[2] == 1)//state 7
     { //write
@@ -245,7 +245,7 @@ function move()
 	  ctx2.fillRect(30,0,10,10);
 	  ctx2.fillRect(20,10,10,10);
       across-=2;
-      t = setTimeout(fillIn, 500);
+	  t = setTimeout(fillIn(across, down), 500);
     }
     if(states[0] == 0 && states[1] == 0 && states[2] == 0)//state 8
     {//nothing
